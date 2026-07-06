@@ -14,13 +14,188 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_plans: {
+        Row: {
+          created_at: string
+          id: string
+          plan_date: string
+          pod_id: string | null
+          priority_task_ids: string[]
+          reflection: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_date: string
+          pod_id?: string | null
+          priority_task_ids?: string[]
+          reflection?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_date?: string
+          pod_id?: string | null
+          priority_task_ids?: string[]
+          reflection?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_plans_pod_id_fkey"
+            columns: ["pod_id"]
+            isOneToOne: false
+            referencedRelation: "pods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pods: {
+        Row: {
+          created_at: string
+          id: string
+          invite_code: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_code: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_code?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          pod_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id: string
+          pod_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          pod_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_pod_id_fkey"
+            columns: ["pod_id"]
+            isOneToOne: false
+            referencedRelation: "pods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      streaks: {
+        Row: {
+          current_count: number
+          last_completed_date: string | null
+          longest_count: number
+          pod_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_count?: number
+          last_completed_date?: string | null
+          longest_count?: number
+          pod_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_count?: number
+          last_completed_date?: string | null
+          longest_count?: number
+          pod_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "streaks_pod_id_fkey"
+            columns: ["pod_id"]
+            isOneToOne: false
+            referencedRelation: "pods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          pod_id: string | null
+          priority: string
+          status: string
+          tag: string | null
+          title: string
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          pod_id?: string | null
+          priority?: string
+          status?: string
+          tag?: string | null
+          title: string
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          pod_id?: string | null
+          priority?: string
+          status?: string
+          tag?: string | null
+          title?: string
+          user_id?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_pod_id_fkey"
+            columns: ["pod_id"]
+            isOneToOne: false
+            referencedRelation: "pods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_pod_id: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
