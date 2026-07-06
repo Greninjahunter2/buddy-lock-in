@@ -34,8 +34,18 @@ function Dashboard() {
   const meQuery = useQuery({
     queryKey: ["profile", user.id],
     queryFn: async (): Promise<Profile> => {
-      const { data, error } = await supabase.from("profiles").select("id,display_name,pod_id").eq("id", user.id).single();
+      const { data, error } = await supabase.from("profiles").select("id,display_name,pod_id").eq("id", user.id).maybeSingle();
       if (error) throw error;
+      if (!data) {
+        // Profile not created yet (trigger may lag). Create it now.
+        const { data: created, error: insErr } = await supabase
+          .from("profiles")
+          .insert({ id: user.id, display_name: (user.user_metadata?.display_name as string) || user.email?.split("@")[0] || "You" })
+          .select("id,display_name,pod_id")
+          .maybeSingle();
+        if (insErr) throw insErr;
+        return created as Profile;
+      }
       return data as Profile;
     },
   });
@@ -125,8 +135,19 @@ function Dashboard() {
     navigate({ to: "/auth", replace: true });
   }, [qc, navigate]);
 
-  if (meQuery.isLoading) {
+  if (meQuery.isLoading || meQuery.isPending) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+  }
+  if (meQuery.error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="card-surface p-6 max-w-md text-center">
+          <h2 className="font-display text-lg text-danger mb-2">Couldn't load your profile</h2>
+          <p className="text-sm text-muted-foreground mb-4">{meQuery.error.message}</p>
+          <button onClick={() => meQuery.refetch()} className="btn-primary">Try again</button>
+        </div>
+      </div>
+    );
   }
   if (!me) return null;
 
